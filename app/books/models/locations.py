@@ -2,6 +2,7 @@ from django.db import models
 
 from . import Book
 
+
 class BookLocation(models.Model):
     register_id = models.CharField(
         verbose_name='등록번호',
