@@ -1,8 +1,12 @@
 import re
+import time
+from datetime import timedelta
+
 import requests
 from bs4 import BeautifulSoup
 
 from books.models import BookLocation
+from books.tasks import book_detail_save, book_location_save
 from ..models import Book
 
 __all__ = (
@@ -36,7 +40,8 @@ def get_book_detail(book_id):
     td = iter(items)
     book_info_dict = dict(zip(td, td))
 
-    # # book상세 정보 DB에 저장
+    # book상세 정보 DB에 저장
+    book_info = book_detail_save.delay(book_id, book_info_dict)
     # book_info, _ = Book.objects.get_or_create(
     #     book_id=book_id,
     #     book_type=book_info_dict.get('자료유형', ' '),
@@ -47,7 +52,7 @@ def get_book_detail(book_id):
     #     ISBN=book_info_dict.get('ISBN', ' '),
     # )
 
-    # return book_info
+    return book_info
 
 
 def get_book_location(book_id, book_info=None):
@@ -87,7 +92,9 @@ def get_book_location(book_id, book_info=None):
                 location_list.append(td_item.get_text(strip=True))
                 book.append(td_item.get_text(strip=True))
 
-        # # BookLocation 모델 생성
+        book_location = book_location_save.delay(book_id=book_id, location_list=location_list)
+
+        # BookLocation 모델 생성
         # book_location, _ = BookLocation.objects.get_or_create(
         #     register_id=location_list[0],
         #     location=location_list[1],
@@ -126,7 +133,7 @@ def get_book_lists(keyword):
             book_id = p.search(book_numbers).group(1)
 
             # 도서 상세 정보
-            # book_detail_info = get_book_detail(book_id)
+            book_detail_info = get_book_detail(book_id)
             # 도서 위치 및 대출 여부
             # locations = ['제1자료실(5층)', '658.31125 한17공3', '대출가능']
             # locations = get_book_location(book_id, book_detail_info)
@@ -190,11 +197,18 @@ def search_book_detail(search):
 
 
 def search_book(keyword):
+    start_time = time.monotonic()
     if keyword.count(',') is 2:
-        return search_book_detail(keyword)
+        result = search_book_detail(keyword)
+        end_time = time.monotonic()
+        print(timedelta(seconds=end_time - start_time))
+        return result
 
     else:
-        return search_book_title(keyword)
+        result = search_book_title(keyword)
+        end_time = time.monotonic()
+        print(timedelta(seconds=end_time - start_time))
+        return result
 
 # # 사용자가 입력하는 경우 '제목,출판사,저자'
 # # TITL,PUBN,AUTH
