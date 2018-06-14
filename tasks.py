@@ -1,6 +1,6 @@
 import time
 
-from celery import Celery
+from config.celery import Celery
 
 # Celery 인스턴스 생성
 app = Celery(
