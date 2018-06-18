@@ -92,15 +92,16 @@ def get_book_location(book_id, book_info=None):
                 location_list.append(td_item.get_text(strip=True))
                 book.append(td_item.get_text(strip=True))
 
-        book_location = book_location_save.delay(book_id=book_id, location_list=location_list)
+        # book_location_save.delay(book_id=book_id, location_list=location_list)
 
         # BookLocation 모델 생성
-        # book_location, _ = BookLocation.objects.get_or_create(
-        #     register_id=location_list[0],
-        #     location=location_list[1],
-        #     book_code=location_list[2],
-        #     book=book_info,
-        # )
+        print('실행')
+        book_location, _ = BookLocation.objects.update_or_create(
+            register_id=location_list[0],
+            location=location_list[1],
+            book_code=location_list[2],
+            book=Book.objects.get(book_id=book_id),
+        )
         books_list.append(book)
 
     return books_list
@@ -132,11 +133,17 @@ def get_book_lists(keyword):
             p = re.compile(r'javascript:search.goDetail[(](\d+)[)]')
             book_id = p.search(book_numbers).group(1)
 
+            book_instance, _ = Book.objects.get_or_create(
+                book_id=book_id,
+            )
+
             # 도서 상세 정보
-            book_detail_info = get_book_detail(book_id)
+            # book_detail_info = get_book_detail(book_id)
+
             # 도서 위치 및 대출 여부
             # locations = ['제1자료실(5층)', '658.31125 한17공3', '대출가능']
             # locations = get_book_location(book_id, book_detail_info)
+            # location 이 있는 경우랑 없는 경우
             locations = get_book_location(book_id)
 
             books_status = ''

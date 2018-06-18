@@ -6,8 +6,8 @@ from . import Book
 class BookLocation(models.Model):
     register_id = models.CharField(
         verbose_name='등록번호',
-        unique=True,
         max_length=100,
+
     )
 
     location = models.CharField(
