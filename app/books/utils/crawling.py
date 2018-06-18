@@ -41,16 +41,16 @@ def get_book_detail(book_id):
     book_info_dict = dict(zip(td, td))
 
     # book상세 정보 DB에 저장
-    book_info = book_detail_save.delay(book_id, book_info_dict)
-    # book_info, _ = Book.objects.get_or_create(
-    #     book_id=book_id,
-    #     book_type=book_info_dict.get('자료유형', ' '),
-    #     book_author=book_info_dict.get('서명 / 저자', ' '),
-    #     book_personnel_author=book_info_dict.get('개인저자', ' '),
-    #     book_issue=book_info_dict.get('발행사항', ' '),
-    #     book_form=book_info_dict.get('형태사항', ' '),
-    #     ISBN=book_info_dict.get('ISBN', ' '),
-    # )
+    # book_info = book_detail_save.delay(book_id, book_info_dict)
+    book_info, _ = Book.objects.update_or_create(
+        book_id=book_id,
+        book_type=book_info_dict.get('자료유형', ' '),
+        book_author=book_info_dict.get('서명 / 저자', ' '),
+        book_personnel_author=book_info_dict.get('개인저자', ' '),
+        book_issue=book_info_dict.get('발행사항', ' '),
+        book_form=book_info_dict.get('형태사항', ' '),
+        ISBN=book_info_dict.get('ISBN', ' '),
+    )
 
     return book_info
 

@@ -1,21 +1,19 @@
 from celery import shared_task
 
 from books.models import Book, BookLocation
+from books.utils import get_book_detail
 from config.celery import app
 
 
 @app.task(bind=True)
-def book_detail_save(self, book_id, book_info_dict):
+def book_detail_save():
     print(f'{book_id} 상세 정보 크롤')
-    book_info, _ = Book.objects.get_or_create(
-        book_id=book_id,
-        book_type=book_info_dict.get('자료유형', ' '),
-        book_author=book_info_dict.get('서명 / 저자', ' '),
-        book_personnel_author=book_info_dict.get('개인저자', ' '),
-        book_issue=book_info_dict.get('발행사항', ' '),
-        book_form=book_info_dict.get('형태사항', ' '),
-        ISBN=book_info_dict.get('ISBN', ' '),
-    )
+
+    books = Book.objects.all()
+
+    for book in books:
+        get_book_detail(book.book_id)
+        print(f'{book.book_id)}가 저장되었습니다.')
 
 
 @shared_task
