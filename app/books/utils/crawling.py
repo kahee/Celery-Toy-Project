@@ -92,16 +92,16 @@ def get_book_location(book_id, book_info=None):
                 location_list.append(td_item.get_text(strip=True))
                 book.append(td_item.get_text(strip=True))
 
-        # book_location_save.delay(book_id=book_id, location_list=location_list)
+        book_location_save.delay(book_id=book_id, location_list=location_list)
 
         # BookLocation 모델 생성
         print('실행')
-        book_location, _ = BookLocation.objects.update_or_create(
-            register_id=location_list[0],
-            location=location_list[1],
-            book_code=location_list[2],
-            book=Book.objects.get(book_id=book_id),
-        )
+        # book_location, _ = BookLocation.objects.update_or_create(
+        #     register_id=location_list[0],
+        #     location=location_list[1],
+        #     book_code=location_list[2],
+        #     book=Book.objects.get(book_id=book_id),
+        # )
         books_list.append(book)
 
     return books_list
