@@ -1,16 +1,12 @@
-from __future__ import absolute_import, unicode_literals
 import os
 
 from celery import Celery
 
-from config import settings
-
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "config.settings")
 
 app = Celery('config')
-app.config_from_object('django.conf:settings',
-                       # CELERY_시작할때만 Settings에서 가져서와서 사용하도록 지정
-                       namespace='CELERY', )
+# namespace 지정 CELERY_시작할때만 Settings에서 가져서와서 사용하도록 지정
+app.config_from_object('django.conf:settings', namespace='CELERY')
 app.autodiscover_tasks()
 
 
