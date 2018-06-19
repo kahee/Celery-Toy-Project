@@ -6,7 +6,7 @@ import requests
 from bs4 import BeautifulSoup
 
 from books.models import BookLocation
-from books.tasks import book_detail_save, book_location_save
+
 from ..models import Book
 
 __all__ = (
@@ -44,12 +44,14 @@ def get_book_detail(book_id):
     # book_info = book_detail_save.delay(book_id, book_info_dict)
     book_info, _ = Book.objects.update_or_create(
         book_id=book_id,
-        book_type=book_info_dict.get('자료유형', ' '),
-        book_author=book_info_dict.get('서명 / 저자', ' '),
-        book_personnel_author=book_info_dict.get('개인저자', ' '),
-        book_issue=book_info_dict.get('발행사항', ' '),
-        book_form=book_info_dict.get('형태사항', ' '),
-        ISBN=book_info_dict.get('ISBN', ' '),
+        defaults={
+            "book_type": book_info_dict.get('자료유형', ' '),
+            "book_author": book_info_dict.get('서명 / 저자', ' '),
+            "book_personnel_author": book_info_dict.get('개인저자', ' '),
+            "book_issue": book_info_dict.get('발행사항', ' '),
+            "book_form": book_info_dict.get('형태사항', ' '),
+            "ISBN": book_info_dict.get('ISBN',' '),
+        }
     )
 
     return book_info
@@ -92,16 +94,18 @@ def get_book_location(book_id, book_info=None):
                 location_list.append(td_item.get_text(strip=True))
                 book.append(td_item.get_text(strip=True))
 
-        book_location_save.delay(book_id=book_id, location_list=location_list)
+        # book_location_save.delay(book_id=book_id, location_list=location_list)
 
         # BookLocation 모델 생성
         print('실행')
-        # book_location, _ = BookLocation.objects.update_or_create(
-        #     register_id=location_list[0],
-        #     location=location_list[1],
-        #     book_code=location_list[2],
-        #     book=Book.objects.get(book_id=book_id),
-        # )
+        book_location, _ = BookLocation.objects.update_or_create(
+            register_id=location_list[0],
+            defaults={
+                'location': location_list[1],
+                'book_code': location_list[2],
+                'book': Book.objects.get(book_id=book_id),
+            }
+        )
         books_list.append(book)
 
     return books_list
