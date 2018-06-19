@@ -7,7 +7,7 @@ class BookLocation(models.Model):
     register_id = models.CharField(
         verbose_name='등록번호',
         max_length=100,
-
+        unique=True,
     )
 
     location = models.CharField(
