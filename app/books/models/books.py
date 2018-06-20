@@ -8,7 +8,6 @@ class Book(models.Model):
     book_id = models.CharField(
         verbose_name='book_id',
         max_length=100,
-        unique=True,
     )
     book_type = models.CharField(
         verbose_name='자료유형',
