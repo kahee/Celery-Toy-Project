@@ -15,12 +15,12 @@ import os
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 ROOT_DIR = os.path.dirname(BASE_DIR)
-
-SECRET_DIR = os.path.join(ROOT_DIR, '.secrets')
-SECRET_BASE = os.path.join(SECRET_DIR, 'base.json')
-
-SECRETS = json.loads(open(SECRET_BASE,'rt').read())
-DATABASES = SECRETS['DATABASES']
+#
+# SECRET_DIR = os.path.join(ROOT_DIR, '.secrets')
+# SECRET_BASE = os.path.join(SECRET_DIR, 'base.json')
+#
+# SECRETS = json.loads(open(SECRET_BASE,'rt').read())
+# DATABASES = SECRETS['DATABASES']
 
 CELERY_BROKER_URL = 'redis://localhost:6379/0'
 CELERY_RESULT_BACKEND = 'redis://localhost:6379/0'
@@ -80,6 +80,18 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'config.wsgi.application'
+
+
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': os.environ.get('DJANGO_DB_NAME', 'djangosample'),
+        'USER': os.environ.get('DJANGO_DB_USERNAME', 'sampleuser'),
+        'PASSWORD': os.environ.get('DJANGO_DB_PASSWORD', 'samplesecret'),
+        'HOST': os.environ.get('DJANGO_DB_HOST', 'localhost'),
+        'PORT': os.environ.get('DJANGO_DB_PORT', '5432'),
+    }
+}
 
 # Password validation
 # https://docs.djangoproject.com/en/2.0/ref/settings/#auth-password-validators
